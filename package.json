@@ -1,0 +1,24 @@
+{
+  "name": "bamazon",
+  "version": "1.0.0",
+  "description": "Amazon-like application for homework.",
+  "main": "bamazonCustomer.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jbribiesca/bamazon.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jbribiesca/bamazon/issues"
+  },
+  "homepage": "https://github.com/jbribiesca/bamazon#readme",
+  "dependencies": {
+    "columnify": "^1.5.4",
+    "inquirer": "^6.3.1",
+    "mysql": "^2.17.1"
+  }
+}
