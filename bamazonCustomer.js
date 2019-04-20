@@ -10,19 +10,30 @@ var connection = mysql.createConnection({
     database: "bamazon"
 });
 
-var itemNum = [];
+var products = [];
 
 connection.connect(function (err) {
     readProducts();
 });
 
+function CreateItem(id, productname, department, price, qty) {
+    this.id = id;
+    this.productname = productname;
+    this.department = department;
+    this.price = price;
+    this.qty = qty;
+}
+
+var search = what => products.find(element => element.id === what);
+
 function readProducts() {
     console.log("Selecting all products in Bamazon!...\n");
     connection.query("SELECT * FROM products", function (err, res) {
         res.forEach(element => {
-            console.log("ITEM ID: " + element.item_id + " -- " + "PRODUCT: " + element.product_name + " -- " + "PRICE: " + element.price + "\n");
-            itemNum.push(element.item_id);
+            var newProduct = new CreateItem(element.item_id, element.product_name, element.department_name, element.price, element.stock_quantity)
+            products.push(newProduct)
         });
+        console.log(columnify(products))
         buyProducts();
     });
 }
@@ -35,7 +46,7 @@ function buyProducts() {
                 type: "input",
                 message: "What is the Item ID of the product you would like to buy?",
                 validate: function (value) {
-                    if (itemNum.includes(parseInt(value))) {
+                    if (search(parseInt(value))) {
                         return true;
                     } console.log("\nPlease enter a valid Item ID!!");
                 }
@@ -47,27 +58,26 @@ function buyProducts() {
 }
 
 function checkInventory(tmpid) {
-    connection.query("SELECT * FROM products WHERE item_id=?", [tmpid], function (err, res) {
-        var actualQty = res[0].stock_quantity
-        var price = res[0].price
-        var itemName = res[0].product_name
-        inquirer
-            .prompt([
-                {
-                    name: "itemqty",
-                    type: "input",
-                    message: "How many " + itemName + "(s) would you like to buy?",
-                    validate: function (value) {
-                        if (value <= actualQty) {
-                            return true;
-                        } console.log("\nInsufficient quantity! We only have " + actualQty + " left!")
-                    }
+    var productObj = products.find(item => item.id === parseInt(tmpid));
+    var actualQty = productObj.qty
+    var price = productObj.price
+    var itemName = productObj.productname
+    inquirer
+        .prompt([
+            {
+                name: "itemqty",
+                type: "input",
+                message: "How many " + itemName + "(s) would you like to buy?",
+                validate: function (value) {
+                    if (value <= actualQty) {
+                        return true;
+                    } console.log("\nInsufficient quantity! We only have " + actualQty + " left!")
                 }
-            ])
-            .then(function (answer) {
-                updateInventory(tmpid, answer.itemqty, actualQty, price);
-            })
-    });
+            }
+        ])
+        .then(function (answer) {
+            updateInventory(tmpid, answer.itemqty, actualQty, price);
+        })
 }
 
 function updateInventory(tmpid, tmpqty, actualQty, price) {
