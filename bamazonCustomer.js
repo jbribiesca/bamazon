@@ -1,6 +1,6 @@
 var mysql = require("mysql");
 var inquirer = require("inquirer");
-var columnify = require("columnify")
+var columnify = require("columnify");
 
 var connection = mysql.createConnection({
     host: "localhost",
