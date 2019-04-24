@@ -16,12 +16,13 @@ connection.connect(function (err) {
     readProducts();
 });
 
-function CreateItem(id, productname, department, price, qty) {
+function CreateItem(id, productname, department, price, qty, productsales) {
     this.id = id;
     this.productname = productname;
     this.department = department;
     this.price = price;
     this.qty = qty;
+    this.productsales = productsales;
 }
 
 var search = what => products.find(element => element.id === what);
@@ -30,7 +31,7 @@ function readProducts() {
     console.log("Selecting all products in Bamazon!...\n");
     connection.query("SELECT * FROM products", function (err, res) {
         res.forEach(element => {
-            var newProduct = new CreateItem(element.item_id, element.product_name, element.department_name, element.price, element.stock_quantity)
+            var newProduct = new CreateItem(element.item_id, element.product_name, element.department_name, element.price, element.stock_quantity, element.product_sales)
             products.push(newProduct)
         });
         console.log(columnify(products))
@@ -62,6 +63,7 @@ function checkInventory(tmpid) {
     var actualQty = productObj.qty
     var price = productObj.price
     var itemName = productObj.productname
+    var totalSales = productObj.productsales
     inquirer
         .prompt([
             {
@@ -76,22 +78,25 @@ function checkInventory(tmpid) {
             }
         ])
         .then(function (answer) {
-            updateInventory(tmpid, answer.itemqty, actualQty, price);
+            updateInventory(tmpid, answer.itemqty, actualQty, price, totalSales);
         })
 }
 
-function updateInventory(tmpid, tmpqty, actualQty, price) {
+function updateInventory(tmpid, tmpqty, actualQty, price, totalSales) {
     var newQty = actualQty - tmpqty
     var totalSale = tmpqty * price
+    var totalProductSales = totalSale + totalSales
+    console.log(totalProductSales)
     connection.query(
         "UPDATE products SET ? WHERE ?",
         [
             {
-                stock_quantity: newQty
+                stock_quantity: newQty,
+                product_sales: totalProductSales
             },
             {
                 item_id: tmpid
-            }
+            },
         ],
         function (error) {
             if (error) throw err;

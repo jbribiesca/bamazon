@@ -10,7 +10,8 @@ var connection = mysql.createConnection({
     database: "bamazon"
 });
 
-var products = []
+var products = [];
+var departments = [];
 
 connection.connect(function (err) {
     start()
@@ -23,6 +24,7 @@ function CreateItem(id, productname, department, price, qty) {
     this.price = price;
     this.qty = qty;
 }
+
 
 var search = what => products.find(element => element.id === what);
 
@@ -58,7 +60,14 @@ function readProducts() {
     connection.query("SELECT * FROM products", function (err, res) {
         res.forEach(element => {
             var newProduct = new CreateItem(element.item_id, element.product_name, element.department_name, element.price, element.stock_quantity)
-            products.push(newProduct)
+            products.push(newProduct);
+        });
+    });
+    departments = [];
+    connection.query("SELECT * FROM departments", function (err, res) {
+        res.forEach(element => {
+            var newDepartment = element.department_name
+            departments.push(newDepartment);
         });
     });
 }
@@ -136,8 +145,12 @@ function addProduct() {
             },
             {
                 name: "department",
-                type: "input",
-                message: "What department does this item belong in?"
+                type: "list",
+                message: "What department does this item belong in?",
+                choices: function(){
+                    return departments
+                }
+
             },
             {
                 name: "price",
