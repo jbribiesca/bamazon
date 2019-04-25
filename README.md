@@ -18,4 +18,6 @@ if you are the supervisor, to view product sales and create new departments: nod
 
 # Video of the application in action
 
+Youtube: https://youtu.be/JnLakSA62qY
+
 
