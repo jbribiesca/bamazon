@@ -48,9 +48,9 @@ function start() {
 
 function readProducts() {
     departmentObj = [];
-    connection.query("SELECT departments.department_id, departments.department_name, departments.over_head_costs, products.product_sales FROM departments INNER JOIN products ON departments.department_name=products.department_name", function (err, res) {
+    connection.query("select departments.department_id,departments.department_name, departments.over_head_costs ,products.product_sales from departments inner join products where departments.department_name=products.department_name group by department_name", function (err, res) {
         res.forEach(element => {
-            var profit = element.product_sales - element.over_head_costs
+            var profit = element.product_sales - element.over_head_costs 
             var newDepartments = new CreateDept(element.department_id, element.department_name, element.over_head_costs, element.product_sales, profit)
             departmentObj.push(newDepartments)
         });

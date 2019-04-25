@@ -34,7 +34,7 @@ function readProducts() {
             var newProduct = new CreateItem(element.item_id, element.product_name, element.department_name, element.price, element.stock_quantity, element.product_sales)
             products.push(newProduct)
         });
-        console.log(columnify(products))
+        console.log(columnify(products, {columns: ["id", "productname", "department", "price", "qty"]}))
         buyProducts();
     });
 }
@@ -86,7 +86,6 @@ function updateInventory(tmpid, tmpqty, actualQty, price, totalSales) {
     var newQty = actualQty - tmpqty
     var totalSale = tmpqty * price
     var totalProductSales = totalSale + totalSales
-    console.log(totalProductSales)
     connection.query(
         "UPDATE products SET ? WHERE ?",
         [
